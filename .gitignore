@@ -1,0 +1,8 @@
+.DS_Store
+node_modules
+*.txt
+package-lock.json
+_config.ts
+_config.js
+index.js
+index.min.js
