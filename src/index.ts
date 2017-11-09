@@ -161,7 +161,7 @@ class PicasaApi {
 
 /**
  * [log ログを取ります]
- * @param  {anny} res [レスポンスオブジェクト]
+ * @param  {any} res [レスポンスオブジェクト]
  */
 function log(res) {
   console.log(`status: ${res.statusCode}`)
