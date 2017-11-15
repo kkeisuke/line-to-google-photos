@@ -8,7 +8,7 @@
   },
   "author": "kkeisuke",
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
     "@types/node": "^8.0.50",
     "typescript": "^2.6.1",
     "uglify-es": "^3.1.8"
