@@ -4,6 +4,8 @@ Use the Line Messaging API to upload images from GCP Cloud Functions to Google P
 
 ![sequence](sequence.png)
 
+https://gist.github.com/kkeisuke/6e460f97ed864c4563dae1c0e52f13d0
+
 ## Build Setup
 
 1. create `src/_config.ts`
