@@ -114,15 +114,16 @@ class GoogleApi {
   }
 }
 
-class PicasaApi {
+class GooglePhotoApi {
 
-  private readonly hostname: string = 'picasaweb.google.com'
+  private readonly hostname: string = 'photoslibrary.googleapis.com'
 
   constructor () {
   }
 
   /**
    * [uploadImage 画像アップロード]
+   * https://developers.google.com/photos/library/guides/upload-media#uploading-bytes
    * @param  {string}       accessToken [アクセストークン]
    * @param  {number}       timestamp   [タイムスタンプ（画像のファイル名に使います）]
    * @param  {binary}       image       [画像ファイル]
@@ -135,12 +136,13 @@ class PicasaApi {
     return new Promise((resolve, reject) => {
       const req = https.request({
         'hostname': this.hostname,
-        'path': `/data/feed/api/user/${PICASA_USER_ID}/albumid/${PICASA_ALBUM_ID}?access_token=${accessToken}`,
+        'path': `/v1/uploads`,
         'method': 'POST',
         'headers': {
-          'Content-Type': 'image/jpeg',
-          'Content-Length': image.length,
-          'Slug': `${timestamp}.jpg`,
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/octet-stream',
+          'X-Goog-Upload-File-Name': `${timestamp}.jpg`,
+          'X-Goog-Upload-Protocol': 'raw'
         }
       }, (res) => {
         log(res)
@@ -154,6 +156,46 @@ class PicasaApi {
         })
       })
       req.write(image)
+      req.end()
+    })
+  }
+
+  /**
+   * [createMediaItem アップロードした写真を自分のライブラリに追加]
+   * https://developers.google.com/photos/library/guides/upload-media#creating-media-item
+   * @param  {string}       accessToken [アクセストークン]
+   * @param  {string}       uploadToken [アップロードトークン]
+   * @return {Promise<any>}             [Promise]
+   */
+  public createMediaItem (accessToken: string, uploadToken: string): Promise<any> {
+    const json = {
+      'newMediaItems': [
+        {
+          'simpleMediaItem': { uploadToken }
+        }
+      ]
+    }
+    return new Promise((resolve) => {
+      const req = https.request({
+        'hostname': this.hostname,
+        'path': `/v1/mediaItems:batchCreate`,
+        'method': 'POST',
+        'headers': {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      }, (res) => {
+        log(res)
+        let result: string = ''
+        res.on('data', (chunk: string) => {
+          result += chunk
+        })
+        res.on('end', () => {
+          console.log(`created media item: ${result}`)
+          resolve(result)
+        })
+      })
+      req.write(JSON.stringify(json))
       req.end()
     })
   }
@@ -179,12 +221,12 @@ exports.exec = async (req, res) => {
 
     const line = new LineAPI()
     const google = new GoogleApi()
-    const picasa = new PicasaApi()
+    const photo = new GooglePhotoApi()
 
     const image = await line.getContent(id)
     const json = await google.getAccessToken()
-
-    await picasa.uploadImage(json.access_token, timestamp, image)
+    const uploadToken = await photo.uploadImage(json.access_token, timestamp, image)
+    await photo.createMediaItem(json.access_token, uploadToken)
     await line.sedReply(replyToken, 'Thank you !!! uploaded Google Photos.')
 
     res.status(200).send('Success');

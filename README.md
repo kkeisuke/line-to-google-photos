@@ -17,11 +17,7 @@ https://gist.github.com/kkeisuke/6e460f97ed864c4563dae1c0e52f13d0
   // Google API
   const CLIENT_ID: string = 'xxx';
   const CLIENT_SECRET: string = 'xxx';
-  const REFRESH_TOKEN : string= 'xxx';
-
-  // Picasa
-  const PICASA_USER_ID: string = 'xxx';
-  const PICASA_ALBUM_ID: string = 'xxx';
+  const REFRESH_TOKEN: string= 'xxx';
   ```
 
 2. `npm install`
@@ -32,3 +28,7 @@ https://gist.github.com/kkeisuke/6e460f97ed864c4563dae1c0e52f13d0
 [Quickstart: Using the Console](https://cloud.google.com/functions/docs/quickstart-console?hl=ja)
 
 Paste `dest/index.min.js` in Inline editor.
+
+## Reference
+
+https://int128.hatenablog.com/entry/2018/06/06/234653
